@@ -164,3 +164,11 @@ body {
 .delete-product {
     cursor: pointer;
 }
+
+.sumar {
+    cursor:pointer;
+}
+
+.restar {
+    cursor: pointer;
+}

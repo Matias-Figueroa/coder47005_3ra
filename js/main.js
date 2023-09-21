@@ -1,85 +1,68 @@
-const shopContent = document.getElementById("shopContent");
+Swal.fire({
+    title: 'BIENVENIDO!',
+    text: 'Todos los productos que necesita en un solo lugar.',
+    imageUrl: 'https://lavozdelpueblo.com.ar/recursos/fotos/2021/04/27/lvp.mercado.jpg',
+    imageWidth: 400,
+    imageHeight: 200,
+    imageAlt: 'Custom image',
+  })
+
+  const shopContent = document.getElementById("shopContent");
 const verCarrito = document.getElementById("verCarrito");
 const modalContainer = document.getElementById("modal-container");
-
-const productos = [
-    {
-        id: 1,
-        nombre:"Harina",
-        precio: 100,
-        img:
-            "https://ardiaprod.vtexassets.com/arquivos/ids/230733/Harina-000-Caserita-1-Kg-_1.jpg?v=638026461936500000",
-        cantidad: 1,    
-    },
-    {
-        id: 2,
-        nombre:"Leche",
-        precio: 250,
-        img:
-            "https://directoriopampeano.com/imagenes/partner/doncandido/imagenes/publicaciones/758345/0_64da525e370a4.webp",
-        cantidad: 1,    
-
-    },
-    {
-        id: 3,
-        nombre:"Galletitas",
-        precio: 350,
-        img:
-            "https://http2.mlstatic.com/D_NQ_NP_923207-MLA53805135827_022023-O.webp",
-        cantidad: 1,    
-    },
-    {
-        id: 4,
-        nombre:"Cerveza",
-        precio: 350,
-        img:
-            "https://01almacen.com.ar/cdn/shop/products/CERVEZA-QUILMES-473ML-LATA_406dd2_28863.jpg?v=1625667914",
-        cantidad: 1,    
-    },
-];
 
 
 let carrito = JSON.parse(localStorage.getItem("ventas")) || [];
 
-productos.forEach((product)=> {
-    let content = document.createElement("div");
-    content.className = "card";
-    content.innerHTML = `
-      <img src="${product.img}">
-      <h3>${product.nombre}</h3>
-      <p class="price">$ ${product.precio} </P>
-    `;
+
+const getProducts = async () => {
+    const response = await fetch("data.json");
+    const data = await response.json();
     
-    shopContent.append(content);
-
-    let comprar = document.createElement("button");
-    comprar.innerText = "comprar";
-    comprar.className = "comprar";
-
-    content.append(comprar);
-
-    comprar.addEventListener("click", () =>{
-       const repeat = carrito.some((repeatProduct) => repeatProduct.id === product.id);
-
-       if(repeat){
-        carrito.map((prod) => {
-            if(prod.id === product.id){
-                prod.cantidad++;
-            }
+    data.forEach((product) => {
+        let content = document.createElement("div");
+        content.className = "card";
+        content.innerHTML = `
+          <img src="${product.img}">
+          <h3>${product.nombre}</h3>
+          <p class="price">$ ${product.precio} </P>
+        `;
+        
+        shopContent.append(content);
+    
+        let comprar = document.createElement("button");
+        comprar.innerText = "comprar";
+        comprar.className = "comprar";
+    
+        content.append(comprar);
+    
+        comprar.addEventListener("click", () =>{
+           const repeat = carrito.some((repeatProduct) => repeatProduct.id === product.id);
+    
+           if(repeat){
+            carrito.map((prod) => {
+                if(prod.id === product.id){
+                    prod.cantidad++;
+                }
+            });
+           } else { 
+            carrito.push({
+            id : product.id,
+            img: product.img,
+            nombre: product.nombre,
+            precio: product.precio,
+            cantidad: product.cantidad,
+           });
+           }
+           console.log(carrito); 
+           saveLocal();
         });
-       } else { 
-        carrito.push({
-        id : product.id,
-        img: product.img,
-        nombre: product.nombre,
-        precio: product.precio,
-        cantidad: product.cantidad,
-       });
-       }
-       console.log(carrito); 
-       saveLocal();
     });
-});
+};
+
+getProducts();
+
+
 
 //set item
 const saveLocal = () => {
